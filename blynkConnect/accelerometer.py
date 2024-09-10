@@ -13,7 +13,7 @@ class ADXL345:
     THRESH_ACT = 0X24 #Activity threshold
     THRESH_INACT = 0X25 #Inactivity threshold
     TIME_INACT = 0X26 #Inactivity time
-    ACT_INACT_CTL = = 0X27 #Axis enable control for activity and inactivity detection
+    ACT_INACT_CTL =  0X27 #Axis enable control for activity and inactivity detection
     
     THRESH_FF = 0X28 #Free-fall threshold
 

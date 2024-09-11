@@ -53,9 +53,9 @@ class ADXL345:
     def read_raw_data(self):
         # Read raw data
         data = self.spi.xfer2([self.DATAX0 | 0x80, 0x00, 0x00, 0x00, 0x00, 0x00])
-        x = ((data[1] << 8) | data[2])
-        y = ((data[3] << 8) | data[4])
-        z = ((data[5] << 8) | data[6])
+        x = ((data[0] << 8) | data[1])
+        y = ((data[2] << 8) | data[3])
+        z = ((data[4] << 8) | data[5])
 
         # Convert to signed integer
         if x > 32767: x -= 65536

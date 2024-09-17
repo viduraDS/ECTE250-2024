@@ -1,4 +1,5 @@
 from accelerometer import ADXL345
+import argparse
 import RPi.GPIO as GPIO
 
 def main():

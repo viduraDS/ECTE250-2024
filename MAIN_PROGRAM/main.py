@@ -53,19 +53,6 @@ try:
     GPIO.add_event_detect(GPIO_Pins,GPIO.RISING,callback=GPIO_callback
 
 
-     
-              #`GPIO2 code goes here
-            
-    GPIO.add_event_detect(3, GPIO.RISING, callback=pin_03, bouncetime=200)
-   
-    GPIO.setup(5, GPIO.IN, initial=GPIO.HIGH, pull_up_down=GPIO.PUD_UP) 
-    GPIO.add_event_detect(5, GPIO.RISING, callback=pin_05, bouncetime=200)
-    
-    GPIO.setup(7, GPIO.IN, initial=GPIO.HIGH, pull_up_down=GPIO.PUD_UP) 
-    GPIO.add_event_detect(7, GPIO.RISING, callback=pin_07, bouncetime=200)
-    
-    GPIO.setup(8, GPIO.IN, initial=GPIO.HIGH, pull_up_down=GPIO.PUD_UP) 
-    GPIO.add_event_detect(8, GPIO.RISING, callback=pin_08, bouncetime=200)
    
 
 ## SPI
@@ -75,14 +62,23 @@ try:
 # debug logger
     logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)  s - %(messag)s')
 
+
+# hardware libraries
+    try:
+        from accelerometer import ADXL345
+    except RuntimeError:
+        print("error importing accelerometer")
+
+
+
 # function definitions
 
 
-def main():
-    print("works")
+    def main():
+        print("running main program")
 
-if __name__ = __main__
-    main()
+    if __name__ = __main__
+        main()
 
 
 

@@ -393,7 +393,7 @@ class ADXL345:
         DoubleTap = data[5]
         SingleTap = data[6]
         
-        return FreeFall, Activity, DoubleTap, SingleTap
+        return (FreeFall, Activity, DoubleTap, SingleTap)
 
     def getXYZ(self, raw=False):
 

@@ -386,7 +386,7 @@ class ADXL345:
         INT_ENABLE_DATA_SIZE = 8
         INT_ENABLE = self.regs['INT_ENABLE'] # Int Enabled Pin
         
-        data = self.__read_data(INT_ENABLE, FF_DATA_SIZE)
+        data = self.__read_data(INT_ENABLE, INT_ENABLE_DATA_SIZE)
 
         FreeFall = data[2]
         Activity = data[4]

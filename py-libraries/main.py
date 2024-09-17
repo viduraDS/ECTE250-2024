@@ -10,7 +10,11 @@ try:
             print("X:",imu.getX())
             print("Y:",imu.getY())
             print("Z:",imu.getZ())
-            time.sleep(0.1)
+            print("Free Fall :",imu.getInterupts()[0])
+            print("Activity: ",imu.getInterupts()[1])
+            print("DoubleTap: ",imu.getInterupts()[2])
+            print("SingleTap: ",imu.getInterupts()[3])
+            time.sleep(1)
         return 0
 
 

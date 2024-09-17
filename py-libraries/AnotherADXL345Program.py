@@ -19,7 +19,7 @@ DATAZ1 = 0x37      # Z-Axis Data 1
 
 # SPI initialization
 spi = SPI.SpiDev()        # Create a new SPI object
-spi.open(0, 0)               # Open bus 0, device 0 (CS0)
+spi.open(3, 0)               # Open bus 0, device 0 (CS0)
 spi.max_speed_hz = 5000      # SPI speed (you can increase this if needed)
 
 # Write to the ADXL345 register
@@ -43,7 +43,7 @@ def read_two_bytes(register):
 # Initialize the ADXL345
 def powerup_adxl345():
     write_register(POWER_CTL, 0x08)  # Set the device to measurement mode
-
+    write_register(0x31,0x8) #Set full res
 # Read acceleration data
 def read_acceleration():
     x = read_two_bytes(DATAX0)

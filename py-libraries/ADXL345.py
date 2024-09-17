@@ -366,7 +366,7 @@ class ADXL345:
             result = self.__calculate_result(c_int16(result).value)
             
         return result
-
+        
     def getZ(self, raw=False):
 
         Z_DATA_SIZE = 2
@@ -380,6 +380,20 @@ class ADXL345:
             result = self.__calculate_result(c_int16(result).value)
             
         return result
+
+    def getInterupts(self, raw=False):
+
+        INT_ENABLE_DATA_SIZE = 8
+        INT_ENABLE = self.regs['INT_ENABLE'] # Int Enabled Pin
+        
+        data = self.__read_data(INT_ENABLE, FF_DATA_SIZE)
+
+        FreeFall = data[2]
+        Activity = data[4]
+        DoubleTap = data[5]
+        SingleTap = data[6]
+        
+        return FreeFall, Activity, DoubleTap, SingleTap
 
     def getXYZ(self, raw=False):
 

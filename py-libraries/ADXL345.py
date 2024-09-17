@@ -388,10 +388,10 @@ class ADXL345:
         
         data = self.__read_data(INT_ENABLE, INT_ENABLE_DATA_SIZE)
 
-        FreeFall = bool(data[2])
-        Activity = bool(data[4])
-        DoubleTap = bool(data[5])
-        SingleTap = bool(data[6])
+        FreeFall = bool(data & 0x04)
+        Activity = bool(data & 0x10)
+        DoubleTap = bool(data & 0x20)
+        SingleTap = bool(data & 0x40)
         
         return (FreeFall, Activity, DoubleTap, SingleTap)
 

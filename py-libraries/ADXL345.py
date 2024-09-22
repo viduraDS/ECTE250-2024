@@ -381,19 +381,21 @@ class ADXL345:
             
         return result
 
-    def getInterupts(self, raw=False):
-
-        INT_ENABLE_DATA_SIZE = 8
-        INT_ENABLE = self.regs['INT_ENABLE'] # Int Enabled Pin
+    def getInterrupts(self, raw=False):
+        INT_SOURCE_DATA_SIZE = 1
+        INT_SOURCE = self.regs['INT_SOURCE']
         
-        data = self.__read_data(INT_ENABLE, INT_ENABLE_DATA_SIZE)
-
-        FreeFall = bool(data & 0x04)
-        Activity = bool(data & 0x10)
-        DoubleTap = bool(data & 0x20)
-        SingleTap = bool(data & 0x40)
+        data = self.__read_data(INT_SOURCE, INT_SOURCE_DATA_SIZE)
+    
+        interrupt_status = data[0]
+    
+        FreeFall = bool(interrupt_status & 0x04) 
+        Activity = bool(interrupt_status & 0x10)
+        DoubleTap = bool(interrupt_status & 0x20)
+        SingleTap = bool(interrupt_status & 0x40)
         
         return (FreeFall, Activity, DoubleTap, SingleTap)
+
 
     def getXYZ(self, raw=False):
 

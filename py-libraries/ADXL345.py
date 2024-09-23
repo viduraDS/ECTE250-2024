@@ -389,10 +389,10 @@ class ADXL345:
     
         interrupt_status = data[0]
     
-        FreeFall = bool(interrupt_status & 0x04) 
-        Activity = bool(interrupt_status & 0x10)
-        DoubleTap = bool(interrupt_status & 0x20)
-        SingleTap = bool(interrupt_status & 0x40)
+        FreeFall = interrupt_status & 0x04
+        Activity = interrupt_status & 0x10
+        DoubleTap = interrupt_status & 0x20
+        SingleTap = interrupt_status & 0x40
         
         return (FreeFall, Activity, DoubleTap, SingleTap)
 

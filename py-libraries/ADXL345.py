@@ -180,14 +180,19 @@ class ADXL345:
     #     GPIO.setup(CS_PIN, CS_PIN_MODE)
     #     GPIO.output(CS_PIN, GPIO.HIGH)
 
-    def __gpio_setup():
+    def __callback_interrupt(self):
+        print("Interrupt Detected")
+
+    def __gpio_setup(self):
         # GPIO setup on raspberry pi for data ready interrupts
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(CS_PIN, CS_PIN_MODE)
         GPIO.output(CS_PIN, GPIO.HIGH)
 
         GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.add_event_detect(17, GPIO.RISING, callback=print("Interrupt Detected"))
+        GPIO.add_event_detect(17, GPIO.RISING, callback=self.__callback_interrupt())
+
+
        
     def __spi_setup(self):
 

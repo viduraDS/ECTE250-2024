@@ -189,9 +189,10 @@ class ADXL345:
         GPIO.setup(CS_PIN, CS_PIN_MODE)
         GPIO.output(CS_PIN, GPIO.HIGH)
 
-        GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.add_event_detect(17, GPIO.RISING, callback=self.__callback_interrupt())
-
+        GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.add_event_detect(24, GPIO.RISING, callback=self.__callback_interrupt())
+        GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.add_event_detect(23, GPIO.RISING, callback=self.__callback_interrupt())
 
        
     def __spi_setup(self):

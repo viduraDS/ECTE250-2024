@@ -65,9 +65,9 @@ def main():
         print("Y:",imu.getY())
         print("Z:",imu.getZ())
 
-        print("Activity: ",imu.getInterrupts()[1])
-        print("DoubleTap: ",imu.getInterrupts()[2])
-        print("SingleTap: ",imu.getInterrupts()[3])
+        # print("Activity: ",imu.getInterrupts()[1])
+        # print("DoubleTap: ",imu.getInterrupts()[2])
+        # print("SingleTap: ",imu.getInterrupts()[3])
         time.sleep(1)
 
 

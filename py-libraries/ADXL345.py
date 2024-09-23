@@ -390,19 +390,19 @@ class ADXL345:
             
         return result
 
-    def getInterrupts(self, raw=False):
-        INT_SOURCE_DATA_SIZE = 1
-        INT_SOURCE = self.regs['INT_SOURCE']
+    # def getInterrupts(self, raw=False):
+    #     INT_SOURCE_DATA_SIZE = 1
+    #     INT_SOURCE = self.regs['INT_SOURCE']
         
-        data = self.__read_data(INT_SOURCE, INT_SOURCE_DATA_SIZE)
+    #     data = self.__read_data(INT_SOURCE, INT_SOURCE_DATA_SIZE)
     
-        interrupt_status = data[0]
+    #     interrupt_status = data[0]
     
-        Activity = interrupt_status & 0x10
-        DoubleTap = interrupt_status & 0x20
-        SingleTap = interrupt_status & 0x40
+    #     Activity = interrupt_status & 0x10
+    #     DoubleTap = interrupt_status & 0x20
+    #     SingleTap = interrupt_status & 0x40
         
-        return ( Activity, DoubleTap, SingleTap)
+    #     return ( Activity, DoubleTap, SingleTap)
 
 
     def getXYZ(self, raw=False):

@@ -175,10 +175,19 @@ class ADXL345:
 
         self.__software_cs = software_cs
         
-    def __gpio_setup(self):
+    # def __gpio_setup(self):
+    #     GPIO.setmode(GPIO.BCM)
+    #     GPIO.setup(CS_PIN, CS_PIN_MODE)
+    #     GPIO.output(CS_PIN, GPIO.HIGH)
+
+    def __gpio_setup():
+        # GPIO setup on raspberry pi for data ready interrupts
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(CS_PIN, CS_PIN_MODE)
         GPIO.output(CS_PIN, GPIO.HIGH)
+
+        GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.add_event_detect(17, GPIO.RISING, callback=print("Interrupt Detected"))
        
     def __spi_setup(self):
 
@@ -389,7 +398,7 @@ class ADXL345:
     
         interrupt_status = data[0]
     
-        FreeFall = interrupt_status & 0x04
+        FreeFall = interrupt_status[]
         Activity = interrupt_status & 0x10
         DoubleTap = interrupt_status & 0x20
         SingleTap = interrupt_status & 0x40

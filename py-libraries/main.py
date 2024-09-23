@@ -60,10 +60,10 @@ def main():
     # epd.display_frame(frame_black, frame_red)
 
     while True:
-        print("Free Fall :",imu.getInterupts()[0])
-        print("Activity: ",imu.getInterupts()[1])
-        print("DoubleTap: ",imu.getInterupts()[2])
-        print("SingleTap: ",imu.getInterupts()[3])
+        print("Free Fall :",imu.getInterrupts()[0])
+        print("Activity: ",imu.getInterrupts()[1])
+        print("DoubleTap: ",imu.getInterrupts()[2])
+        print("SingleTap: ",imu.getInterrupts()[3])
         time.sleep(1)
 
 

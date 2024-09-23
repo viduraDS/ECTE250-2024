@@ -24,10 +24,12 @@
  # THE SOFTWARE.
  ##
 
-import epd4in2b
-from PIL import Image
-from PIL import ImageFont
-from PIL import ImageDraw
+# import epd4in2b
+# from PIL import Image
+# from PIL import ImageFont
+# from PIL import ImageDraw
+import ADXL345
+import time
 
 COLORED = 1
 UNCOLORED = 0

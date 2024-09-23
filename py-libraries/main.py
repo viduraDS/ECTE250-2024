@@ -34,7 +34,7 @@ import time
 COLORED = 1
 UNCOLORED = 0
 
-imu = ADXL345()
+imu = ADXL345(interrupt_enable=True)
 
 def main():
     # epd = epd4in2b.EPD()
@@ -64,7 +64,7 @@ def main():
         print("X:",imu.getX())
         print("Y:",imu.getY())
         print("Z:",imu.getZ())
-        
+
         print("Free Fall :",imu.getInterrupts()[0])
         print("Activity: ",imu.getInterrupts()[1])
         print("DoubleTap: ",imu.getInterrupts()[2])

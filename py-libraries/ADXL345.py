@@ -398,12 +398,11 @@ class ADXL345:
     
         interrupt_status = data[0]
     
-        FreeFall = interrupt_status[0]
         Activity = interrupt_status & 0x10
         DoubleTap = interrupt_status & 0x20
         SingleTap = interrupt_status & 0x40
         
-        return (FreeFall, Activity, DoubleTap, SingleTap)
+        return ( Activity, DoubleTap, SingleTap)
 
 
     def getXYZ(self, raw=False):

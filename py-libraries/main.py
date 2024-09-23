@@ -60,6 +60,11 @@ def main():
     # epd.display_frame(frame_black, frame_red)
 
     while True:
+
+        print("X:",imu.getX())
+        print("Y:",imu.getY())
+        print("Z:",imu.getZ())
+        
         print("Free Fall :",imu.getInterrupts()[0])
         print("Activity: ",imu.getInterrupts()[1])
         print("DoubleTap: ",imu.getInterrupts()[2])

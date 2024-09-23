@@ -28,7 +28,7 @@
 # from PIL import Image
 # from PIL import ImageFont
 # from PIL import ImageDraw
-import ADXL345
+from ADXL345 import *
 import time
 
 COLORED = 1

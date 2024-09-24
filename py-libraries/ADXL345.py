@@ -164,23 +164,11 @@ class ADXL345:
 
         self.__full_resolution = full_resolution
 
-        # if self.__full_resolution:
-    
-        #     # according to ADXL345 datasheet
-        #     # in full resolution mode the sensitivity
-        #     # is always 3.9mg/LSB
-        #     self.__sensitivity = ADXL345_ACC_SENSITIVITY_2G_TYP
-
-        # else:
-
         self.__sensitivity = sensitivity
             
         self.__scale = (1 << scale)
 
         self.__software_cs = software_cs
-
-    def __callback_interrupt(self):
-        print("Interrupt Detected")
 
     def __gpio_setup(self):
         # GPIO setup on raspberry pi for data ready interrupts
@@ -188,12 +176,9 @@ class ADXL345:
         GPIO.setup(CS_PIN, CS_PIN_MODE)
         GPIO.output(CS_PIN, GPIO.HIGH)
 
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(INT_PIN1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.setup(INT_PIN2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) 
-
-    # GPIO.add_event_detect(INT_PIN1, GPIO.RISING, callback=int1_isr)  
-   # GPIO.add_event_detect(INT_PIN2, GPIO.RISING, callback=int2_isr)  
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(INT_PIN1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(INT_PIN2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) 
        
     def __spi_setup(self):
 

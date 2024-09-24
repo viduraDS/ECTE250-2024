@@ -197,8 +197,8 @@ class ADXL345:
     GPIO.setup(INT_PIN1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(INT_PIN2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) 
 
-    GPIO.add_event_detect(INT_PIN1, GPIO.RISING, callback=int1_isr)  
-    GPIO.add_event_detect(INT_PIN2, GPIO.RISING, callback=int2_isr)  
+    # GPIO.add_event_detect(INT_PIN1, GPIO.RISING, callback=int1_isr)  
+   # GPIO.add_event_detect(INT_PIN2, GPIO.RISING, callback=int2_isr)  
        
     def __spi_setup(self):
 

@@ -16,7 +16,7 @@ import RPi.GPIO as GPIO
 DEFAULT_SPI_BUS = 3
 DEFAULT_SPI_DEVICE = 0
 
-DEFAULT_CS_PIN = 0
+DEFAULT_CS_PIN = 4
 DEFAULT_CS_PIN_MODE = GPIO.OUT
 
 SPI_BUS = DEFAULT_SPI_BUS
@@ -178,11 +178,6 @@ class ADXL345:
         self.__scale = (1 << scale)
 
         self.__software_cs = software_cs
-        
-    # def __gpio_setup(self):
-    #     GPIO.setmode(GPIO.BCM)
-    #     GPIO.setup(CS_PIN, CS_PIN_MODE)
-    #     GPIO.output(CS_PIN, GPIO.HIGH)
 
     def __callback_interrupt(self):
         print("Interrupt Detected")
@@ -415,25 +410,44 @@ class ADXL345:
         
     #     return ( Activity, DoubleTap, SingleTap)
 
+    def check_ifWorking1(self):
+        print("working")
+
+    zoe = lambda x: print("hhello")
+
+    lisa = lambda y: print("hello")
+
     def enable_interrupts(self):
         INT_ENABLE = self.regs['INT_ENABLE']
+        GPIO.setup(INT_PIN1, GPIO.IN, GPIO.PUD_DOWN)
+        GPIO.setup(INT_PIN2, GPIO.IN, GPIO.PUD_DOWN)
+
+        # GPIO.add_event_detect(INT_PIN1, GPIO.RISING, callback=self.check_ifWorking1, bouncetime=200)
+        # GPIO.add_event_detect(INT_PIN2, GPIO.RISING, callback=self.check_ifWorking1, bouncetime=200)
+
+        GPIO.add_event_detect(INT_PIN1, GPIO.RISING, callback=zoe, bouncetime=200)
+        GPIO.add_event_detect(INT_PIN2, GPIO.RISING, callback=lisa, bouncetime=200)
         
         INTERRUPT_MASK = 0x04 | 0x20
         
         self.__write_data(INT_ENABLE, [INTERRUPT_MASK])
         print("Interrupts for Free Fall and Double Tap enabled.")
 
+
+
     def check_interrupts(self):
         INT_SOURCE = self.regs['INT_SOURCE']
-        interrupt_status = self.__read_data(INT_SOURCE, 1)[0]
+        interrupt_status = self.__read_data(INT_SOURCE, 1)
+        print(interrupt_status)
 
-        # Check if Free Fall interrupt (bit 2) has occurred
-        if interrupt_status & 0x04:
-            print("Free Fall interrupt detected!")
-
-        # Check if Double Tap interrupt (bit 5) has occurred
-        if interrupt_status & 0x20:
-            print("Double Tap interrupt detected!")
+        # # Check if Free Fall interrupt (bit 2) has occurred
+        # if interrupt_status & 0x04:
+        #     print("Free Fall interrupt detected!")
+        # # Check if Double Tap interrupt (bit 5) has occurred
+        # elif interrupt_status & 0x20:
+        #     print("Double Tap interrupt detected!")
+        # else:
+        #     print("non-interrupt detected")
 
 
     def getXYZ(self, raw=False):

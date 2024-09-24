@@ -30,14 +30,14 @@
 # from PIL import ImageDraw
 from ADXL345 import *
 import time
-from GPS import *
+# from GPS import *
 
 COLORED = 1
 UNCOLORED = 0
 
 imu = ADXL345(interrupt_enable=True)
 imu.enable_interrupts()
-gps = GPS() 
+# gps = GPS() 
 
 
 def main():

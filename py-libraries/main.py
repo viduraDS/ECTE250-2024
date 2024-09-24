@@ -30,11 +30,15 @@
 # from PIL import ImageDraw
 from ADXL345 import *
 import time
+from GPS import *
 
 COLORED = 1
 UNCOLORED = 0
 
 imu = ADXL345(interrupt_enable=True)
+imu.enable_interrupts()
+gps = GPS() 
+
 
 def main():
     # epd = epd4in2b.EPD()
@@ -61,13 +65,11 @@ def main():
 
     while True:
 
+        imu.check_interrupts()
         print("X:",imu.getX())
         print("Y:",imu.getY())
         print("Z:",imu.getZ())
-
-        # print("Activity: ",imu.getInterrupts()[1])
-        # print("DoubleTap: ",imu.getInterrupts()[2])
-        # print("SingleTap: ",imu.getInterrupts()[3])
+        #gps.run() 
         time.sleep(1)
 
 

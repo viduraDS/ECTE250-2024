@@ -80,6 +80,10 @@ ADXL345_OUTPUT_DATA_RATE_800HZ = 0xD
 ADXL345_OUTPUT_DATA_RATE_1600HZ = 0xE
 ADXL345_OUTPUT_DATA_RATE_3200HZ = 0xF
 
+# Interupt pins
+INT_PIN1 = 23  
+INT_PIN2 = 24 
+
 ADXL345_DEFAULT_SENSITIVITY = ADXL345_ACC_SENSITIVITY_2G_TYP
 ADXL345_DEFAULT_SCALE = ADXL345_ACC_SCALE_2G
 ADXL345_DEFAULT_ODR = ADXL345_OUTPUT_DATA_RATE_100HZ
@@ -189,11 +193,12 @@ class ADXL345:
         GPIO.setup(CS_PIN, CS_PIN_MODE)
         GPIO.output(CS_PIN, GPIO.HIGH)
 
-        GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.add_event_detect(24, GPIO.RISING, callback=self.__callback_interrupt())
-        GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.add_event_detect(23, GPIO.RISING, callback=self.__callback_interrupt())
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(INT_PIN1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(INT_PIN2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) 
 
+    GPIO.add_event_detect(INT_PIN1, GPIO.RISING, callback=int1_isr)  
+    GPIO.add_event_detect(INT_PIN2, GPIO.RISING, callback=int2_isr)  
        
     def __spi_setup(self):
 
@@ -409,6 +414,26 @@ class ADXL345:
     #     SingleTap = interrupt_status & 0x40
         
     #     return ( Activity, DoubleTap, SingleTap)
+
+    def enable_interrupts(self):
+        INT_ENABLE = self.regs['INT_ENABLE']
+        
+        INTERRUPT_MASK = 0x04 | 0x20
+        
+        self.__write_data(INT_ENABLE, [INTERRUPT_MASK])
+        print("Interrupts for Free Fall and Double Tap enabled.")
+
+    def check_interrupts(self):
+        INT_SOURCE = self.regs['INT_SOURCE']
+        interrupt_status = self.__read_data(INT_SOURCE, 1)[0]
+
+        # Check if Free Fall interrupt (bit 2) has occurred
+        if interrupt_status & 0x04:
+            print("Free Fall interrupt detected!")
+
+        # Check if Double Tap interrupt (bit 5) has occurred
+        if interrupt_status & 0x20:
+            print("Double Tap interrupt detected!")
 
 
     def getXYZ(self, raw=False):

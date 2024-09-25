@@ -1,80 +1,99 @@
 import spidev
 import time
+import math
+import argparse
+import os
+import sys
 
-class ADXL345:
-    # ADXL345 Registers
-    THRESH_TAP = 0X1D #Tap threshold
-    OFSX = 0X1E #X-axis offset
-    OFSY = 0X1F #Y-axis offset
-    OFSZ = 0X20 #Z-axis offset
-    DUR = 0X21 #Tap duration
-    Latent = 0x22 #Tap latency
-    Window = 0x23 #Tap window
-    THRESH_ACT = 0X24 #Activity threshold
-    THRESH_INACT = 0X25 #Inactivity threshold
-    TIME_INACT = 0X26 #Inactivity time
-    ACT_INACT_CTL = = 0X27 #Axis enable control for activity and inactivity detection
-    
-    THRESH_FF = 0X28 #Free-fall threshold
+class ADXL345SPI:
+    DATA_FORMAT = 0x31
+    DATA_FORMAT_B = 0x0B
+    READ_BIT = 0x80
+    MULTI_BIT = 0x40
+    BW_RATE = 0x2C
+    POWER_CTL = 0x2D
+    DATAX0 = 0x32
 
-    TIME_FF = 0X29 #Free-fall time
+    codeVersion = "0.3"
+    timeDefault = 5  # default duration of data stream, seconds
+    freqDefault = 5  # default sampling rate of data stream, Hz
+    freqMax = 3200  # maximal allowed cmdline arg sampling rate, Hz
+    speedSPI = 2000000  # SPI communication speed, bps
+    freqMaxSPI = 100000  # maximal possible sampling rate through SPI, Hz
+    coldStartSamples = 2  # number of samples to be read before outputting data to console
+    coldStartDelay = 0.1  # delay between cold start reads
+    accConversion = 2 * 16.0 / 8192.0  # +/- 16g range, 13-bit resolution
+    tStatusReport = 1  # time period of status report if data read to file, seconds
 
-    TAP_AXES = 0X2A #Axis control for single tap/double tap
-    ACT_TAP_STATUS = 0X2B #Source of single tap/double tap
-    BW_RATE = 0X2C #Data rate and power mode control
-    POWER_CTL = 0X2D #Power-saving features control
-    INT_ENABLE = 0X2E #Interrupt enable control
-    INT_MAP = 0X2F #Interrupt mapping control
-    INT_SOURCE = 0X30 #Source of interrupts
-    DATA_FORMAT = 0x31 #Data format control
-    DATAX0 = 0x32 #X-Axis Data 0
-    DATAX1 = 0X33 #X-Axis Data 1
-    DATAY0 = 0X34 #Y-Axis Data 0
-    DATAY1 = 0X35 #Y-Axis Data 1
-    DATAZ0 = 0X36 #Z-Axis Data 0
-    DATAZ1 = 0X37 #Z-Axis Data 1
-    FIFO_CTL = 0X38 #FIFO control
-    FIFO_STATUS = 0X39 #FIFO status
-
-
-    def __init__(self, bus=0, device=0, max_speed_hz=5000):
-        # Initialize SPI
+    def __init__(self, time_stream=timeDefault, freq_stream=freqDefault, save_file=None):
+        self.time_stream = time_stream
+        self.freq_stream = freq_stream
+        self.save_file = save_file
         self.spi = spidev.SpiDev()
-        self.spi.open(bus, device)  # Open SPI bus and device (CS)
-        self.spi.max_speed_hz = max_speed_hz
-        self.init_sensor()
+        self.spi.open(0, 0)
+        self.spi.max_speed_hz = self.speedSPI
 
+    def read_bytes(self, data, count):
+        data[0] |= self.READ_BIT
+        if count > 1:
+            data[0] |= self.MULTI_BIT
+        return self.spi.xfer2(data)
 
-    def init_sensor(self):
-        # Initialize the ADXL345 sensor
-        self.spi.xfer2([self.POWER_CTL, 0x08])  # Set to measure mode
-        self.spi.xfer2([self.DATA_FORMAT, 0x08])  # Set to full res, +/-2g
+    def write_bytes(self, data, count):
+        if count > 1:
+            data[0] |= self.MULTI_BIT
+        self.spi.writebytes(data)
 
-    def read_raw_data(self):
-        # Read raw data
-        data = self.spi.xfer2([self.DATAX0 | 0x80, 0x00, 0x00, 0x00, 0x00, 0x00])
-        x = ((data[1] << 8) | data[2])
-        y = ((data[3] << 8) | data[4])
-        z = ((data[5] << 8) | data[6])
+    def setup_sensor(self):
+        # Set BW_RATE
+        self.write_bytes([self.BW_RATE, 0x0F], 2)
+        # Set DATA_FORMAT
+        self.write_bytes([self.DATA_FORMAT, self.DATA_FORMAT_B], 2)
+        # Set POWER_CTL
+        self.write_bytes([self.POWER_CTL, 0x08], 2)
 
-        # Convert to signed integer
-        if x > 32767: x -= 65536
-        if y > 32767: y -= 65536
-        if z > 32767: z -= 65536
+    def read_sensor_data(self):
+        # Perform cold start reads to stabilize
+        for _ in range(self.coldStartSamples):
+            self.read_bytes([self.DATAX0] + [0] * 6, 7)
+            time.sleep(self.coldStartDelay)
 
-        return x, y, z
+        delay = 1.0 / self.freq_stream
+        samples = int(self.freq_stream * self.time_stream)
 
-    def read_acceleration(self):
-        # Read acceleration data from the ADXL345 sensor
-        x, y, z = self.read_raw_data()
+        if not self.save_file:
+            self._read_to_console(samples, delay)
+        else:
+            self._read_to_file(samples, delay)
 
-        scale_factor = 0.0039  # Assuming +/-2g range and full res
-        x_g = x * scale_factor
-        y_g = y * scale_factor
-        z_g = z * scale_factor
+    def _read_to_console(self, samples, delay):
+        t_start = time.time()
+        for i in range(samples):
+            data = self.read_bytes([self.DATAX0] + [0] * 6, 7)
+            x = (data[2] << 8) | data[1]
+            y = (data[4] << 8) | data[3]
+            z = (data[6] << 8) | data[5]
+            t = time.time() - t_start
+            print(f"time = {t:.3f}, x = {x * self.accConversion:.3f}, y = {y * self.accConversion:.3f}, z = {z * self.accConversion:.3f}")
+            time.sleep(delay)
 
-        return x_g, y_g, z_g
+    def _read_to_file(self, samples, delay):
+        at = []
+        ax = []
+        ay = []
+        az = []
+        t_start = time.time()
+        
+        with open(self.save_file, 'w') as f:
+            f.write("time, x, y, z\n")
+            for i in range(samples):
+                data = self.read_bytes([self.DATAX0] + [0] * 6, 7)
+                x = (data[2] << 8) | data[1]
+                y = (data[4] << 8) | data[3]
+                z = (data[6] << 8) | data[5]
+                t = time.time() - t_start
+                f.write(f"{t:.5f}, {x * self.accConversion:.5f}, {y * self.accConversion:.5f}, {z * self.accConversion:.5f}\n")
+                time.sleep(delay)
 
     def close(self):
-        # Close the SPI connection
         self.spi.close()

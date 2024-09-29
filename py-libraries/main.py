@@ -41,37 +41,19 @@ imu.enable_interrupts()
 
 
 def main():
-    # epd = epd4in2b.EPD()
-    # epd.init()
-    # # For simplicity, the arguments are explicit numerical coordinates
-    # image_red = Image.new('1', (epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), 255)    # 255: clear the frame
-    # draw_red = ImageDraw.Draw(image_red)
-    # image_black = Image.new('1', (epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), 255)    # 255: clear the frame
-    # draw_black = ImageDraw.Draw(image_black)
-    # font = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', 24)
-    # draw_black.rectangle((0, 6, 400, 30), fill = 0)
-    # draw_black.text((100, 10), 'e-Paper demo', font = font, fill = 255)
-    # draw_black.arc((40, 80, 180, 220), 0, 360, fill = 0)
-    # draw_red.rectangle((200, 80, 360, 280), fill = 0)
-    # draw_red.arc((240, 80, 380, 220), 0, 360, fill = 255)
+    # Create an instance of the ADXL345 class
+    adxl345 = ADXL345()
 
-    # # display the frames
-    # epd.display_frame(epd.get_frame_buffer(image_black), epd.get_frame_buffer(image_red))
+    # Enable double-tap interrupts
+    adxl345.enable_interrupts()
 
-    # # display images
-    # frame_black = epd.get_frame_buffer(Image.open('black.bmp'))
-    # frame_red = epd.get_frame_buffer(Image.open('red.bmp'))
-    # epd.display_frame(frame_black, frame_red)
+    try:
+        # Keep the program running to listen for interrupts
+        while True:
+            pass  # You can perform other tasks here if needed
+    except KeyboardInterrupt:
+        # Clean up GPIO and close SPI connection on exit
+        adxl345.close()
 
-    while True:
-
-        imu.check_interrupts()
-        print("X:",imu.getX())
-        print("Y:",imu.getY())
-        print("Z:",imu.getZ())
-        #gps.run() 
-        time.sleep(1)
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

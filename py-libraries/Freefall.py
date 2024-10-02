@@ -1,5 +1,5 @@
 from time import sleep
-from ADXL345 import ADXL345 as imu
+from ADXL345 import ADXL345 
 
 def detect_free_fall(threshold=10, time_interval=0.1):
     """

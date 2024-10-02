@@ -13,10 +13,10 @@ from ctypes import c_int16
 import spidev
 import RPi.GPIO as GPIO
 
-DEFAULT_SPI_BUS = 3
+DEFAULT_SPI_BUS = 0
 DEFAULT_SPI_DEVICE = 0
 
-DEFAULT_CS_PIN = 0
+DEFAULT_CS_PIN = 18
 DEFAULT_CS_PIN_MODE = GPIO.OUT
 
 SPI_BUS = DEFAULT_SPI_BUS
@@ -366,7 +366,7 @@ class ADXL345:
             result = self.__calculate_result(c_int16(result).value)
             
         return result
-        
+
     def getZ(self, raw=False):
 
         Z_DATA_SIZE = 2
@@ -380,22 +380,6 @@ class ADXL345:
             result = self.__calculate_result(c_int16(result).value)
             
         return result
-
-    def getInterrupts(self, raw=False):
-        INT_SOURCE_DATA_SIZE = 1
-        INT_SOURCE = self.regs['INT_SOURCE']
-        
-        data = self.__read_data(INT_SOURCE, INT_SOURCE_DATA_SIZE)
-    
-        interrupt_status = data[0]
-    
-        FreeFall = bool(interrupt_status & 0x04) 
-        Activity = bool(interrupt_status & 0x10)
-        DoubleTap = bool(interrupt_status & 0x20)
-        SingleTap = bool(interrupt_status & 0x40)
-        
-        return (FreeFall, Activity, DoubleTap, SingleTap)
-
 
     def getXYZ(self, raw=False):
 
@@ -418,4 +402,3 @@ class ADXL345:
     @property
     def whoAmI(self):
         return self.__whoAmI
-

@@ -4,8 +4,7 @@ import RPi.GPIO as GPIO
 import adafruit_adxl34x
 import serial
 import requests
-from epd4in2b import EPD
-from epd4in2b import EPD_WIDTH, EPD_HEIGHT
+from soonuse_paper import Epaper_4in2  # Import Soonuse STM32 Paper Library for 4.2 inch e-paper
 from PIL import Image, ImageDraw, ImageFont
 import board
 import busio
@@ -37,9 +36,9 @@ accelerometer = adafruit_adxl34x.ADXL345(i2c)
 gps_serial = serial.Serial('/dev/ttyAMA0', baudrate=9600, timeout=1)
 
 # Setup E-Paper
-epd = EPD()
-epd.init()
-epd.Clear()
+epaper = Epaper_4in2()  # Initialize the 4.2 inch e-paper display
+epaper.init()
+epaper.Clear(0xFF)  # Clear the display to white
 font = ImageFont.load_default()
 
 # Global state
@@ -110,11 +109,11 @@ def get_address_from_coordinates(latitude, longitude):
     return "Address not found"
 
 def display_message_on_epaper(message):
-    image = Image.new('1', (EPD_WIDTH, EPD_HEIGHT), 255)
+    image = Image.new('1', (epaper.width, epaper.height), 255)
     draw = ImageDraw.Draw(image)
     draw.text((10, 10), message, font=font, fill=0)
-    epd.display(image)
-    epd.sleep()
+    epaper.display(image)  # Display the image on the e-paper
+epaper.sleep()
 
 # Blynk event handler for text input
 @blynk.handle_event('write V9')

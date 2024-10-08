@@ -8,7 +8,6 @@ from soonuse_paper import Epaper_4in2  # Import Soonuse STM32 Paper Library for 
 from PIL import Image, ImageDraw, ImageFont
 import board
 import busio
-import adafruit_adxl34x
 
 BLYNK_AUTH = 'XMU3TqkPXkZuubyYdndoIP1qgHhY4u1i'
 GOOGLE_MAPS_API_KEY = 'AIzaSyBrcCsgn8itcgdn0XhrkgAG-nUOm7kaX1o'

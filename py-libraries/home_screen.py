@@ -1,9 +1,8 @@
 from PIL import Image, ImageDraw, ImageFont
-from datetime import datetime
 
 # Set up the e-paper display size (substitute your actual e-paper resolution here)
-DISPLAY_WIDTH = 300
-DISPLAY_HEIGHT = 400
+DISPLAY_WIDTH = 640
+DISPLAY_HEIGHT = 384
 
 # Create a blank image for drawing
 image = Image.new('RGB', (DISPLAY_WIDTH, DISPLAY_HEIGHT), 'white')
@@ -27,27 +26,30 @@ def create_ui():
 
     # Display the time in large font
     time_text = "6:42 AM"
-    time_w, time_h = draw.textsize(time_text, font=font_large)
+    time_bbox = draw.textbbox((0, 0), time_text, font=font_large)  # Using textbbox instead of textsize
+    time_w = time_bbox[2] - time_bbox[0]  # Calculate width of text
     draw.text(((DISPLAY_WIDTH - time_w) / 2, 20), time_text, font=font_large, fill='black')
 
     # Display the date with red background
     date_text = "Tuesday\n10/09/2024"
-    date_w, date_h = draw.textsize(date_text, font=font_medium)
+    date_bbox = draw.textbbox((0, 0), date_text, font=font_medium)
+    date_w = date_bbox[2] - date_bbox[0]
     date_x = (DISPLAY_WIDTH - date_w) / 2
     date_y = 200
-    draw.rectangle([date_x - 10, date_y - 10, date_x + date_w + 10, date_y + date_h + 10], fill="red", outline="black")
+    draw.rectangle([date_x - 10, date_y - 10, date_x + date_w + 10, date_y + date_bbox[3] + 10], fill="red", outline="black")
     draw.text((date_x, date_y), date_text, font=font_medium, fill="black")
 
     # Draw two buttons for "Record" and "Load"
     draw.rectangle([150, 280, 300, 340], fill="white", outline="red")
-    draw.text((175, 300), "Medication", font=font_small, fill="black")
+    draw.text((175, 300), "Record", font=font_small, fill="black")
 
     draw.rectangle([350, 280, 500, 340], fill="white", outline="red")
-    draw.text((375, 300), "Mental Health", font=font_small, fill="black")
+    draw.text((375, 300), "Load", font=font_small, fill="black")
 
     # Placeholder for the Dog GIF
     gif_text = "[Dog GIF Here]"
-    gif_w, gif_h = draw.textsize(gif_text, font=font_small)
+    gif_bbox = draw.textbbox((0, 0), gif_text, font=font_small)
+    gif_w = gif_bbox[2] - gif_bbox[0]
     draw.rectangle([200, 160, 440, 200], outline="black", fill="white")
     draw.text(((DISPLAY_WIDTH - gif_w) / 2, 170), gif_text, font=font_small, fill="black")
 
@@ -68,7 +70,10 @@ def create_ui():
 create_ui()
 
 # Save the image for testing or send it to the e-paper display
-image.save('epaper_ui_test.png')
+image.save('epaper_ui_test_fixed.png')
+
+# If you're testing on actual hardware, you can now send the `image` to the e-paper display driver.
+
 
 
 

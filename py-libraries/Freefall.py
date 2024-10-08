@@ -1,38 +1,79 @@
-from time import sleep
-from ADXL345 import ADXL345 
+import numpy as np
+import time as T
+import math
+from ADXL345 import ADXL345
 
-def detect_free_fall(threshold=10, time_interval=0.1):
-    """
-    Continuously monitors the ADXL345 for a free fall event.
+# Initialize the accelerometer
+imu = ADXL345()
+
+# Initialize velocity as a global variable
+velocity = np.array([0.0, 0.0, 0.0])  # Assume starting from rest
+
+# Parameters for detecting sustained high acceleration
+acceleration_threshold = 20.0  # Threshold for high acceleration (adjust as needed)
+high_accel_duration_limit = 2.0  # Maximum duration to tolerate high acceleration in seconds
+warning_duration_limit = 0.5  # Short duration for a warning before high acceleration
+
+def Status(x, y, z, dt):   
+    global velocity
+
+    # Calculate the magnitude of the acceleration
+    magnitude = math.sqrt(x**2 + y**2 + z**2)
     
-    Parameters:
-    - threshold: Number of consecutive free-fall detections before reporting.
-    - time_interval: Time interval (seconds) between successive readings.
-    """
+    # Update velocity using numerical integration (v = v + a * dt)
+    acceleration = np.array([x, y, z])
+    velocity += acceleration * dt
+
+    # Calculate the magnitude of the velocity
+    velocity_magnitude = math.sqrt(velocity[0]**2 + velocity[1]**2 + velocity[2]**2)
+
+    # Print the current acceleration magnitude and velocity magnitude
+    print(f"Acceleration magnitude: {magnitude}, Velocity magnitude: {velocity_magnitude}")
     
-    imu = ADXL345()  # Initialize the ADXL345 accelerometer
-    
-    consecutive_free_falls = 0  # Keep track of consecutive free falls
+    return magnitude
+
+# Main function
+def main():
+    global velocity
+    high_accel_start_time = None
+    last_time = T.time()  # Keep track of the last time step
 
     try:
-        while True:
-            free_fall, _, _, _ = imu.getInterrupts()  # Only check for free fall
-            
-            if free_fall:
-                consecutive_free_falls += 1
-                print(f"Free fall detected {consecutive_free_falls} times")
-            else:
-                consecutive_free_falls = 0  # Reset if no free fall detected
+        for i in range(1000):   
+            # Get the current time
+            current_time = T.time()
+            dt = current_time - last_time  # Calculate the time step (delta time)
+            last_time = current_time
 
-            # Trigger an alert or response when threshold is reached
-            if consecutive_free_falls >= threshold:
-                print("ALERT: Free fall detected!")
-                break  # or take appropriate action
+            # Read accelerometer values
+            x, y, z = imu.getXYZ()
+
+            # Get acceleration magnitude
+            accel_magnitude = Status(x, y, z, dt)  
+
+            # Check if the acceleration exceeds the threshold
+            if accel_magnitude > acceleration_threshold:
+                if high_accel_start_time is None:
+                    high_accel_start_time = current_time  # Start tracking the high acceleration period
+                
+                high_accel_duration = current_time - high_accel_start_time
+                
+                # Check if high acceleration persists for too long
+                if high_accel_duration > high_accel_duration_limit:
+                    print("Warning: High acceleration sustained for too long!")
+                    # You can also trigger actions like stopping the process, sending an alert, etc.
+                elif high_accel_duration > warning_duration_limit:
+                    print("Warning: High acceleration detected for a short time!")
+            else:
+                # Reset the timer when acceleration is below the threshold
+                high_accel_start_time = None
             
-            sleep(time_interval)  # Wait before the next check
+            # Sleep for a short duration to simulate real-time data collection (adjust as needed)
+            T.sleep(0.01)
 
     except KeyboardInterrupt:
-        print("Free fall detection stopped.")
+        print("Data collection interrupted")
 
 if __name__ == "__main__":
-    detect_free_fall()
+    main()
+

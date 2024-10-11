@@ -1,8 +1,8 @@
 from PIL import Image, ImageDraw, ImageFont
 
 # Set up the e-paper display size (substitute your actual e-paper resolution here)
-DISPLAY_WIDTH = 640
-DISPLAY_HEIGHT = 384
+DISPLAY_WIDTH = 400
+DISPLAY_HEIGHT = 300
 
 # Create a blank image for drawing
 image = Image.new('RGB', (DISPLAY_WIDTH, DISPLAY_HEIGHT), 'white')

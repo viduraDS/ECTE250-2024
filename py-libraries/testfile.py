@@ -2,7 +2,7 @@ import blynklib
 import time
 import RPi.GPIO as GPIO
 import adafruit_adxl34x
-from lib.waveshare_epd import epd4in2  # Import Soonuse STM32 Paper Library for 4.2 inch e-paper from GitHub repo
+import epd4in2  # Import Soonuse STM32 Paper Library for 4.2 inch e-paper from GitHub repo
 from PIL import Image, ImageDraw, ImageFont
 import board
 import busio

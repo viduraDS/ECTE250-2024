@@ -99,8 +99,8 @@ def blynk_connected():
 
 try:
     while True:
-        print("Running Blynk")
         blynk.run()
+        print("Running Blynk")
         time.sleep(0.01)
 
         print("Getting acceleration data...")

@@ -42,9 +42,13 @@ event_start_time = None
 event_duration = 0
 
 def get_acceleration():
-    """Get acceleration data from ADXL345."""
-    accel_x, accel_y, accel_z = accelerometer.acceleration
-    return accel_x, accel_y, accel_z
+    try:
+        accel_x, accel_y, accel_z = accelerometer.acceleration
+        print(f"Raw Acceleration - X: {accel_x}, Y: {accel_y}, Z: {accel_z}")
+        return accel_x, accel_y, accel_z
+    except Exception as e:
+        print(f"Error reading accelerometer: {e}")
+        return 0, 0, 0  # Return default values in case of error
 
 def calculate_velocity(acceleration, delta_time):
     """Calculate velocity from acceleration."""
@@ -97,6 +101,7 @@ try:
     while True:
         print("Running Blynk")
         blynk.run()
+        time.sleep(0.01)
 
         print("Getting acceleration data...")
         current_time = time.time()

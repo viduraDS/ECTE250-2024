@@ -30,5 +30,14 @@ def main():
     blynk_setup.register_handler("Connected", lambda: print('Connected to Blynk'))
     blynk_setup.register_handler("V0", v0_write_handler)
 
+    try:
+        while True:
+            blynk_setup.run()
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        print("Program stopped by User")
+    finally:
+        GPIO.cleanup()
+
 if __name__ == "__main__":
     main()

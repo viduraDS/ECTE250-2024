@@ -2,7 +2,9 @@ import time
 import RPi.GPIO as GPIO
 import spidev
 import math
-
+import board
+import busio
+import adafruit_adxl34x
 from blynk_setup import BlynkSetup
 from buzzer import Buzzer
 
@@ -15,6 +17,10 @@ def main():
 
     # Initialise Blynk
     blynk_setup = BlynkSetup(auth_token=BLYNK_AUTH)
+
+    # Initialise Accelerometer
+    i2c = busio.I2C(board.SCL, board.SDA)
+    accelerometer = adafruit_adxl34x.ADXL345(i2c)
 
     # Initialise Actuators
     buzzer = Buzzer(pin=5)  # GPIO5
@@ -33,6 +39,7 @@ def main():
     try:
         while True:
             blynk_setup.run()
+            print(accelerometer.acceleration)
             time.sleep(0.1)
     except KeyboardInterrupt:
         print("Program stopped by User")

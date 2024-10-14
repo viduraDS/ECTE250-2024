@@ -95,8 +95,10 @@ def blynk_connected():
 
 try:
     while True:
+        print("Running Blynk")
         blynk.run()
-        
+
+        print("Getting acceleration data...")
         current_time = time.time()
         delta_time = current_time - last_time
         last_time = current_time
@@ -112,6 +114,7 @@ try:
 
         print(f"Acceleration: {acceleration}")
         print(f"Velocity: {velocity}")
+
       
         # Detect if freefall has occurred
         if accelerometer.events['freefall']:

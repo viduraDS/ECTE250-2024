@@ -2,7 +2,6 @@ import blynklib
 import time
 import RPi.GPIO as GPIO
 import adafruit_adxl34x
-import epd4in2b  # Import Soonuse STM32 Paper Library for 4.2 inch e-paper from GitHub repo
 from PIL import Image, ImageDraw, ImageFont
 import board
 import busio
@@ -29,9 +28,6 @@ i2c = busio.I2C(board.SCL, board.SDA)
 accelerometer = adafruit_adxl34x.ADXL345(i2c)
 
 # Setup E-Paper
-epd = epd4in2.EPD()
-epd.init()
-epd.Clear()
 font = ImageFont.load_default()
 
 # Global state
@@ -80,25 +76,16 @@ def detect_high_acceleration(acceleration):
             blynk.virtual_write(7, f"High Acceleration Event: {event_duration:.2f} sec")  # Send event info to Blynk
             event_duration = 0  # Reset for next event
 
-def display_message_on_epaper(message):
-    image = Image.new('1', (epd.width, epd.height), 255)
-    draw = ImageDraw.Draw(image)
-    draw.text((10, 10), message, font=font, fill=0)
-    epd.display(image)
-    epd.sleep()
-
 # Blynk event handler for text input
 @blynk.handle_event('write V9')
 def blynk_text_input(pin, values):
     message = values[0]
-    display_message_on_epaper(message)
 
 # Blynk event handler for send button
 @blynk.handle_event('write V0')
 def blynk_send_button(pin, values):
     if values[0] == '1':
         message = blynk.get_value(9)  # Get the message from text input
-        display_message_on_epaper(message)
         GPIO.output(BUZZER_PIN, GPIO.HIGH)
 
 # Blynk event handler for device connection

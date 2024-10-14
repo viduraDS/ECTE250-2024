@@ -32,9 +32,17 @@ def main():
         else:
             buzzer.buzz_off()
 
+    def v8_write_handler(value):
+        if int(value[0]) == 1:
+            buzzer.buzz_on()
+        else:
+            blynk_setup.virtual_write(8, accelerometer.acceleration)  # Send message to V1 (Display widget)
+
+
     # Register handlers with Blynk
     blynk_setup.register_handler("Connected", lambda: print('Connected to Blynk'))
-    blynk_setup.register_handler("V0", v0_write_handler)
+    
+    blynk_setup.register_handler("V8", v8_write_handler)
 
     try:
         while True:

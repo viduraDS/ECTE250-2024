@@ -21,6 +21,7 @@ def main():
     # Initialise Accelerometer
     i2c = busio.I2C(board.SCL, board.SDA)
     accelerometer = adafruit_adxl34x.ADXL345(i2c)
+    accelerometer.enable_freefall_detection()
 
     # Initialise Actuators
     buzzer = Buzzer(pin=5)  # GPIO5
@@ -49,7 +50,7 @@ def main():
             if accelerometer.events['freefall']:
                 fall_detected = True
                 print('fall detected')
-                blynk_setup.virtual_write(6, 1)  # Set Fall Detected indicator (V6) to red
+                blynk_setup.virtual_write(6, 255)  # Set Fall Detected indicator (V6) to red
             x, y, z = accelerometer.acceleration
             blynk_setup.virtual_write(8, f"X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
             time.sleep(0.1)

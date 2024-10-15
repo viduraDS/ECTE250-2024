@@ -46,6 +46,10 @@ def main():
     try:
         while True:
             blynk_setup.run()
+            if accelerometer.events['freefall']:
+                fall_detected = True
+                print('fall detected')
+                blynk_setup.virtual_write(6, 1)  # Set Fall Detected indicator (V6) to red
             x, y, z = accelerometer.acceleration
             blynk_setup.virtual_write(8, f"X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
             time.sleep(0.1)

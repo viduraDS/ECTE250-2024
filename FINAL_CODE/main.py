@@ -6,7 +6,7 @@ import board
 import busio
 import adafruit_adxl34x
 from blynk_setup import BlynkSetup
-from buzzer import Buzzer
+from hapticmodule import Haptic
 
 
 BLYNK_AUTH = 'XMU3TqkPXkZuubyYdndoIP1qgHhY4u1i'
@@ -31,27 +31,13 @@ def main():
     accelerometer = adafruit_adxl34x.ADXL345(i2c)
 
     # Initialise Actuators
-    buzzer = Buzzer(pin=5)  # GPIO5
+    buzzer = Haptic(pin=12)  # GPIO12
 
     fall_detected = False
-
-    # Create Handlers
-    def v0_write_handler(value):
-        if int(value[0]) == 1:
-            buzzer.buzz_on()
-        else:
-            buzzer.buzz_off()
-
-    def v8_write_handler(value):
-        if int(value[0]) == 1:
-            buzzer.buzz_on()
-        else:
-            buzzer.buzz_off()
 
     # Register handlers with Blynk
     blynk_setup.register_handler("Connected", lambda: print('Connected to Blynk'))
     
-    blynk_setup.register_handler("V0", v0_write_handler)
 
     try:
         while True:

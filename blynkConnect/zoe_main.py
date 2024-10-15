@@ -32,7 +32,7 @@ def main():
         else:
             buzzer.buzz_off()
 
-    def v0_write_handler(value):
+    def v8_write_handler(value):
         if int(value[0]) == 1:
             buzzer.buzz_on()
         else:
@@ -46,7 +46,8 @@ def main():
     try:
         while True:
             blynk_setup.run()
-            print(accelerometer.acceleration)
+            x, y, z = accelerometer.acceleration
+            blynk_setup.virtual_write(8, f"X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
             time.sleep(0.1)
     except KeyboardInterrupt:
         print("Program stopped by User")

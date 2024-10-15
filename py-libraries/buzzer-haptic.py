@@ -2,16 +2,16 @@ import RPi.GPIO as GPIO
 import time
 
 class Haptic:
-    def __init__(self, pin, frequency=100): #Defaulting the frequency to be 100Hz
+    def __init__(self, pin, frequency=100): 
         self.pin = pin
-        GPIO.setmode(GPIO.BCM)  # Use Broadcom pin-numbering
-        GPIO.setup(self.pin, GPIO.OUT)  # Set the pin as an output
-        self.frequency = frequency  # Frequency of PWM signal in Hz
-        GPIO.setmode(GPIO.BCM)  # Use Broadcom pin-numbering
-        GPIO.setup(self.pin, GPIO.OUT)  # Set the pin as an output
-        self.pwm = GPIO.PWM(self.pin, self.frequency)  # Initialize PWM on the pin
-        self.pwm.start(0)  # Start PWM with 0% duty cycle (off)
-
+        GPIO.setmode(GPIO.BCM) 
+        GPIO.setup(self.pin, GPIO.OUT)  
+        self.frequency = frequency  
+        GPIO.setmode(GPIO.BCM)  
+        GPIO.setup(self.pin, GPIO.OUT)  
+        self.pwm = GPIO.PWM(self.pin, self.frequency)  
+        self.pwm.start(0)  
+        
     def set_strength(self, duty_cycle):
         """
         Set the strength of the motor by changing the duty cycle.
@@ -39,6 +39,7 @@ class Haptic:
         print("Haptic pulse activated")
         time.sleep(1)
         GPIO.output(self.pin,GPIO.LOW)
+        
 
 class Buzzer: 
     def __init__(self, pin, frequency=100): # Defaulting the frequency to be 100Hz
@@ -69,12 +70,16 @@ class Buzzer:
     def cleanup(self):
         GPIO.cleanup(self.pin)  # Clean up the pin when done
 
+
     def pulse(self):
         GPIO.output(self.pin, GPIO.HIGH)
         print("Buzzer pulse activated")
         time.sleep(1)
         GPIO.output(self.pin,GPIO.LOW)
+
+    def set_freq(self, frequency):
+        self.frequency = frequency
+        print("Frequency set to {self.frequency}Hz")
  
-        
 
 

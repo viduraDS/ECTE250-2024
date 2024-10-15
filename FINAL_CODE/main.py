@@ -6,7 +6,7 @@ import board
 import busio
 import adafruit_adxl34x
 from blynk_setup import BlynkSetup
-from hapticmodule import Haptic
+from haptic-buzzer import Haptic, Buzzer
 
 
 BLYNK_AUTH = 'XMU3TqkPXkZuubyYdndoIP1qgHhY4u1i'
@@ -39,7 +39,9 @@ def main():
     accelerometer = adafruit_adxl34x.ADXL345(i2c)
 
     # Initialise Actuators
+    haptic = Haptic(pin=12)  # GPIO12
     buzzer = Haptic(pin=12)  # GPIO12
+
     BUTTON1_PIN = 16 # Yes
     BUTTON2_PIN = 17 # No
     BUTTON3_PIN = 7 # SOS
@@ -78,6 +80,7 @@ def main():
 
             while fall_detected:
                 buzzer.pulse()
+                haptic.pulse()
                 if GPIO.input(BUTTON1_PIN) == GPIO.HIGH: # Actually Fallen
                     fall_detected = False
                     alert_carer()

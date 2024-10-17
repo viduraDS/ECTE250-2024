@@ -34,7 +34,7 @@ def get_ip_address():
 
 # Function to check if the USB is mounted at /media/flash/
 def is_usb_mounted():
-    usb_mount_point = '/media/flash/'
+    usb_mount_point = '/media/flash/victor/'
     if os.path.ismount(usb_mount_point):
         return usb_mount_point
     return None

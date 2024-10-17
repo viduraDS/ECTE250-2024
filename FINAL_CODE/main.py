@@ -24,9 +24,6 @@ def alert_carer():
     addr = getAddr(lat, lon)
     blynk_setup.virtual_write(8, addr)
 
-
-
-
 def main():
     # Initialise GPIO
     GPIO.setmode(GPIO.BCM)
@@ -53,12 +50,9 @@ def main():
         print(message)
         # send to screen
 
-
-
     # Register handlers with Blynk
     blynk_setup.register_handler("Connected", lambda: print('Connected to Blynk'))
     blynk_setup.register_handler("V9", v9_write_handler)
-    
 
     try:
         while True:

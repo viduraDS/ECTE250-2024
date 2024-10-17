@@ -32,13 +32,11 @@ def get_ip_address():
     except Exception as e:
         return f"Unable to get IP address: {e}"
 
-# Function to find the USB mount point
-def find_usb_mount_point():
-    # Assuming the USB is mounted under /media/pi/ or /mnt/
-    possible_mount_points = ['/media/flash/', '/mnt/']
-    for mount_point in possible_mount_points:
-        if os.path.ismount(mount_point):
-            return mount_point
+# Function to check if the USB is mounted at /media/flash/
+def is_usb_mounted():
+    usb_mount_point = '/media/flash/'
+    if os.path.ismount(usb_mount_point):
+        return usb_mount_point
     return None
 
 # Function to append the IP address with a timestamp to a file on the USB stick
@@ -59,13 +57,13 @@ if __name__ == "__main__":
         # Get the IP address
         ip_address = get_ip_address()
 
-        # Find the USB mount point
-        mount_point = find_usb_mount_point()
+        # Check if the USB is mounted at /media/flash/
+        mount_point = is_usb_mounted()
 
         if mount_point:
             # Append the IP address with a timestamp to the USB stick
             write_ip_to_usb(ip_address, mount_point)
         else:
-            print("No USB stick found or mounted.")
+            print("No USB stick found or mounted at /media/flash/.")
     else:
         print("Could not establish internet connection. Exiting script.")

@@ -1,7 +1,22 @@
+import os
 import socket
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import time
+from datetime import datetime
+
+# Function to check if the device is connected to the internet
+def wait_for_internet(timeout=60, interval=5):
+    for _ in range(int(timeout / interval)):
+        try:
+            # Try to connect to Google's DNS server to check if there's internet access
+            socket.setdefaulttimeout(1)
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
+            print("Internet connection established.")
+            return True
+        except OSError:
+            print("Waiting for internet connection...")
+            time.sleep(interval)
+    print("No internet connection after waiting.")
+    return False
 
 # Function to get the IP address of the Raspberry Pi
 def get_ip_address():
@@ -17,41 +32,40 @@ def get_ip_address():
     except Exception as e:
         return f"Unable to get IP address: {e}"
 
-# Function to send an email with the IP address
-def send_email(ip_address, to_email):
+# Function to find the USB mount point
+def find_usb_mount_point():
+    # Assuming the USB is mounted under /media/pi/ or /mnt/
+    possible_mount_points = ['/media/flash/', '/mnt/']
+    for mount_point in possible_mount_points:
+        if os.path.ismount(mount_point):
+            return mount_point
+    return None
+
+# Function to append the IP address with a timestamp to a file on the USB stick
+def write_ip_to_usb(ip_address, mount_point):
     try:
-        # Email details
-        from_email = "effd250@gmail.com"
-        password = "flashthedog"
-        subject = "Raspberry Pi IP Address"
-
-        # Create the message
-        msg = MIMEMultipart()
-        msg['From'] = from_email
-        msg['To'] = to_email
-        msg['Subject'] = subject
-
-        # Add the IP address as the message body
-        body = f"The IP address of your Raspberry Pi is: {ip_address}"
-        msg.attach(MIMEText(body, 'plain'))
-
-        # Setup the SMTP server
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(from_email, password)
-
-        # Send the email
-        text = msg.as_string()
-        server.sendmail(from_email, to_email, text)
-
-        # Close the connection to the server
-        server.quit()
-        print("Email sent successfully!")
+        file_path = os.path.join(mount_point, 'rpi_ip_address.txt')
+        with open(file_path, 'a') as f:  # 'a' mode for appending to the file
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            f.write(f"{current_time} - The local IP address of the Raspberry Pi is: {ip_address}\n")
+        print(f"IP address appended to {file_path}")
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        print(f"Failed to write to USB: {e}")
 
 # Main function
 if __name__ == "__main__":
-    ip_address = get_ip_address()
-    recipient_email = "vsds970@uowmail.edu.au"  
-    send_email(ip_address, recipient_email)
+    # Wait for an internet connection before proceeding
+    if wait_for_internet():
+        # Get the IP address
+        ip_address = get_ip_address()
+
+        # Find the USB mount point
+        mount_point = find_usb_mount_point()
+
+        if mount_point:
+            # Append the IP address with a timestamp to the USB stick
+            write_ip_to_usb(ip_address, mount_point)
+        else:
+            print("No USB stick found or mounted.")
+    else:
+        print("Could not establish internet connection. Exiting script.")

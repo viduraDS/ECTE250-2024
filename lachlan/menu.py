@@ -12,7 +12,7 @@ canvas = Canvas(root, width=480, height=640, bg="white")
 canvas.pack()
 
 # Path to your GIF
-gif_path = r"C:\Users\super\OneDrive\Desktop\UOW 2024 - Spring Sem\ECTE250\Flash.gif"
+gif_path = r"./New Piskel.gif"
 
 # Load the GIF using Pillow
 gif_image = Image.open(gif_path)

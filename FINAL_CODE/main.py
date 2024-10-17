@@ -40,7 +40,7 @@ def main():
 
     # Initialise Actuators
     haptic = Haptic(pin=12)  # GPIO12
-    buzzer = Haptic(pin=12)  # GPIO12
+    buzzer = Buzzer(pin=13)  # GPIO13
 
     BUTTON1_PIN = 16 # Yes
     BUTTON2_PIN = 17 # No

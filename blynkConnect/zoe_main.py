@@ -2,45 +2,22 @@ import time
 import RPi.GPIO as GPIO
 import spidev
 import math
-
+import board
+import busio
+import adafruit_adxl34x
 from blynk_setup import BlynkSetup
 from buzzer import Buzzer
-from accelerometer import ADXL345
 
 
 BLYNK_AUTH = 'XMU3TqkPXkZuubyYdndoIP1qgHhY4u1i'
 
-def detect_fall(adxl345):
-    fall_detected = False
-
-    # Constants for fall detection
-    acceleration_threshold = 2.0  # Threshold for detecting impact (in g)
-    free_fall_threshold = 0.3  # Threshold for free fall (near zero g)
-    free_fall_time = 0.2  # Minimum time (in seconds) to consider a free fall
-    impact_time = 0.1  # Time to detect impact after free fall
-
-    free_fall_start = None
-
-    while True:
-        x_g, y_g, z_g = adxl345.read_acceleration()
-        total_acc = math.sqrt(x_g**2 + y_g**2 + z_g**2)
-
-        if total_acc < free_fall_threshold:
-            if free_fall_start is None:
-                free_fall_start = time.time()
-        else:
-            if free_fall_start is not None:
-                elapsed_time = time.time() - free_fall_start
-                if elapsed_time >= free_fall_time:
-                    if total_acc > acceleration_threshold:
-                        fall_detected = True
-                        print("Fall detected! Impact acceleration: {:.2f} g".format(total_acc))
-                        break
-                free_fall_start = None
-
-        time.sleep(0.1)  # Adjust as necessary
-
-    return fall_detected
+def calculate_velocity(x, y, z, delta_time):
+    """Calculate velocity from acceleration."""
+    velocity = []
+    velocity[0] += x * delta_time  # X-axis velocity
+    velocity[1] += y * delta_time  # Y-axis velocity
+    velocity[2] += z * delta_time  # Z-axis velocity
+    return velocity
 
 def main():
     # Initialise GPIO
@@ -49,11 +26,14 @@ def main():
     # Initialise Blynk
     blynk_setup = BlynkSetup(auth_token=BLYNK_AUTH)
 
-    # Initialise Sensors
-    accelerometer = ADXL345()
+    # Initialise Accelerometer
+    i2c = busio.I2C(board.SCL, board.SDA)
+    accelerometer = adafruit_adxl34x.ADXL345(i2c)
 
     # Initialise Actuators
     buzzer = Buzzer(pin=5)  # GPIO5
+
+    fall_detected = False
 
     # Create Handlers
     def v0_write_handler(value):
@@ -62,25 +42,44 @@ def main():
         else:
             buzzer.buzz_off()
 
+    def v8_write_handler(value):
+        if int(value[0]) == 1:
+            buzzer.buzz_on()
+        else:
+            buzzer.buzz_off()
+
     # Register handlers with Blynk
     blynk_setup.register_handler("Connected", lambda: print('Connected to Blynk'))
+    
     blynk_setup.register_handler("V0", v0_write_handler)
 
-    # Main Loop for Blynk Connection
     try:
         while True:
-            if detect_fall(accelerometer):
-                # Handle the fall event (e.g., send a notification)
-                print("Handling the fall event...")
-                # Add your notification or alerting logic here
-                time.sleep(5)  # Prevent multiple detections for the same fall
+            blynk_setup.run()
+            velocity = calculate_velocity(x, y, z, delta_time)
+            print(f"Acceleration: X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
+            print(f"Velocity: {velocity}")
+
+            if accelerometer.events['freefall']:
+                fall_detected = True
+                print('fall detected')
+                blynk_setup.virtual_write(6, 1)  # Set Fall Detected indicator (V6) to red
+
+            current_time = time.time()
+            delta_time = current_time - last_time
+            last_time = current_time
+            x, y, z = accelerometer.acceleration
+
+            # Calculate velocity
 
 
+            blynk_setup.virtual_write(8, f"X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
+            
+            time.sleep(0.1)
     except KeyboardInterrupt:
-        pass
+        print("Program stopped by User")
     finally:
         GPIO.cleanup()
-        accelerometer.close()
 
 if __name__ == "__main__":
     main()

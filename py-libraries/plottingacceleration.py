@@ -2,10 +2,14 @@
 import matplotlib as plt
 import numpy as np
 import time as T  
-from ADXL345 import ADXL345
+import board
+import busio
+import adafruit_adxl34x
 
 # Initialize the accelerometer
-imu = ADXL345()
+i2c = busio.I2C(board.SCL, board.SDA)
+accelerometer = adafruit_adxl34x.ADXL345(i2c)
+
 
 # Plot function
 def Plot(time_data, x, y, z):
@@ -45,11 +49,11 @@ def main():
         for i in range(1000):   
             # Get the current time relative to start
             current_time = T.time() - start_time
-
+            x, y, z = accelerometer.acceleration
             # Read accelerometer values
-            x_data.append(imu.getX())
-            y_data.append(imu.getY())
-            z_data.append(imu.getZ())
+            x_data.append(x)
+            y_data.append(y)
+            z_data.append(z)
             time_data.append(current_time)
 
             # Sleep for a short duration to simulate real-time data collection (adjust as needed)

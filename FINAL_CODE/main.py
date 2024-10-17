@@ -24,9 +24,6 @@ def alert_carer():
     addr = getAddr(lat, lon)
     blynk_setup.virtual_write(8, addr)
 
-
-
-
 def main():
     # Initialise GPIO
     GPIO.setmode(GPIO.BCM)
@@ -40,7 +37,7 @@ def main():
 
     # Initialise Actuators
     haptic = Haptic(pin=12)  # GPIO12
-    buzzer = Haptic(pin=12)  # GPIO12
+    buzzer = Buzzer(pin=13)  # GPIO13
 
     BUTTON1_PIN = 16 # Yes
     BUTTON2_PIN = 17 # No
@@ -53,12 +50,9 @@ def main():
         print(message)
         # send to screen
 
-
-
     # Register handlers with Blynk
     blynk_setup.register_handler("Connected", lambda: print('Connected to Blynk'))
     blynk_setup.register_handler("V9", v9_write_handler)
-    
 
     try:
         while True:

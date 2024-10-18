@@ -69,6 +69,11 @@ def main():
                 blynk_setup.virtual_write(8, "The University of Wollongong, Northfields Ave, Wollongong NSW 2500")
 
             while fall_detected:
+                print("Pin: 17 = ", GPIO.input(BUTTON1_PIN))
+                print("Pin: 27 = ", GPIO.input(BUTTON2_PIN))
+                print("Pin: 22 = ", GPIO.input(BUTTON3_PIN))
+
+
                 buzzer.pulse()
                 haptic.pulse()
                 if GPIO.input(BUTTON1_PIN) == GPIO.HIGH:  # Actually Fallen

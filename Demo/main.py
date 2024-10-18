@@ -72,8 +72,6 @@ def main():
                 print("Pin: 17 = ", GPIO.input(BUTTON1_PIN))
                 print("Pin: 27 = ", GPIO.input(BUTTON2_PIN))
                 print("Pin: 22 = ", GPIO.input(BUTTON3_PIN))
-
-
                 buzzer.pulse()
                 haptic.pulse()
                 if GPIO.input(BUTTON1_PIN) == GPIO.LOW:  # Actually Fallen

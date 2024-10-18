@@ -87,7 +87,7 @@ def main():
                 else:  # No response - fall detected (wait 30s)
                     dt = time.time() - start_time
                     print(dt)
-                    if dt < 30:
+                    if dt > 30:
                         blynk_setup.virtual_write(8, "The University of Wollongong, Northfields Ave, Wollongong NSW 2500")
                         fall_detected = False
 

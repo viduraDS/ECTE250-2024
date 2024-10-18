@@ -58,9 +58,9 @@ def main():
             x, y, z = accelerometer.acceleration
             # print(f"Acceleration: X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
 
-            print("Pin: 17 = ", GPIO.input(BUTTON1_PIN))
-            print("Pin: 27 = ", GPIO.input(BUTTON2_PIN))
-            print("Pin: 22 = ", GPIO.input(BUTTON3_PIN))
+            # print("Pin: 17 = ", GPIO.input(BUTTON1_PIN))
+            # print("Pin: 27 = ", GPIO.input(BUTTON2_PIN))
+            # print("Pin: 22 = ", GPIO.input(BUTTON3_PIN))
 
             if accelerometer.events['freefall']:
                 start_time = time.time()

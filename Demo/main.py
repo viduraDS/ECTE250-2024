@@ -35,6 +35,8 @@ def main():
     buzzer = Buzzer(pin=12)  # GPIO12 for buzzer
 
     fall_detected = False
+    blynk_setup.virtual_write(8, "No Fall has been Detected")
+
 
     def v9_write_handler(value):
         message = value[0]

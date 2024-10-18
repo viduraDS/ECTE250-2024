@@ -8,14 +8,19 @@ import adafruit_adxl34x
 from blynk_setup import BlynkSetup
 from hapticBuzzer import Haptic, Buzzer
 
-
 BLYNK_AUTH = 'XMU3TqkPXkZuubyYdndoIP1qgHhY4u1i'
 
-
-    
 def main():
     # Initialise GPIO
     GPIO.setmode(GPIO.BCM)
+
+    # Set up GPIO pins for buttons
+    BUTTON1_PIN = 17  # Yes
+    BUTTON2_PIN = 27  # No
+    BUTTON3_PIN = 22  # SOS
+    GPIO.setup(BUTTON1_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(BUTTON2_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(BUTTON3_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     # Initialise Blynk
     blynk_setup = BlynkSetup(auth_token=BLYNK_AUTH)
@@ -25,13 +30,8 @@ def main():
     accelerometer = adafruit_adxl34x.ADXL345(i2c)
 
     # Initialise Actuators
-    haptic = Haptic(pin=13)  # GPIO12
-    buzzer = Haptic(pin=12)  # GPIO12
-
-    BUTTON1_PIN = 17 # Yes
-    BUTTON2_PIN = 27 # No
-    BUTTON3_PIN = 22# SOS
-
+    haptic = Haptic(pin=13)  # GPIO13 for haptic feedback
+    buzzer = Buzzer(pin=12)  # GPIO12 for buzzer
 
     fall_detected = False
 
@@ -44,14 +44,10 @@ def main():
         blynk_setup.virtual_write(6, 255)  # Set Fall Detected indicator to red
         blynk_setup.virtual_write(8, "No Fall has been Detected")
 
-
-
     # Register handlers with Blynk
     blynk_setup.register_handler("Connected", lambda: print('Connected to Blynk'))
     blynk_setup.register_handler("V9", v9_write_handler)
     blynk_setup.register_handler("V0", v0_write_handler)
-
-    
 
     try:
         while True:
@@ -59,11 +55,10 @@ def main():
             x, y, z = accelerometer.acceleration
             print(f"Acceleration: X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
 
-
             if accelerometer.events['freefall']:
                 start_time = time.time()
                 fall_detected = True
-                print('fall detected')
+                print('Fall detected')
                 blynk_setup.virtual_write(6, 255)  # Set Fall Detected indicator to red
 
             if GPIO.input(BUTTON3_PIN) == GPIO.HIGH:
@@ -73,18 +68,18 @@ def main():
             while fall_detected:
                 buzzer.pulse()
                 haptic.pulse()
-                if GPIO.input(BUTTON1_PIN) == GPIO.HIGH: # Actually Fallen
+                if GPIO.input(BUTTON1_PIN) == GPIO.HIGH:  # Actually Fallen
                     fall_detected = False
                     blynk_setup.virtual_write(8, "The University of Wollongong, Northfields Ave, Wollongong NSW 2500")
-                elif GPIO.input(BUTTON1_PIN) == GPIO.HIGH: # False Alert
+                elif GPIO.input(BUTTON2_PIN) == GPIO.HIGH:  # False Alert
                     fall_detected = False
                     blynk_setup.virtual_write(6, 0)  # Turn fall detected indicator off
-                else: # no response - fall detected (wait 30s)
-                    dt = time.time - start_time
+                else:  # No response - fall detected (wait 30s)
+                    dt = time.time() - start_time
                     if dt < 30:
                         blynk_setup.virtual_write(8, "The University of Wollongong, Northfields Ave, Wollongong NSW 2500")
                         fall_detected = False
-            
+
             time.sleep(0.1)
     except KeyboardInterrupt:
         print("Program stopped by User")
@@ -93,3 +88,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -18,9 +18,9 @@ def main():
     BUTTON1_PIN = 17  # Yes
     BUTTON2_PIN = 27  # No
     BUTTON3_PIN = 22  # SOS
-    GPIO.setup(BUTTON1_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.setup(BUTTON2_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.setup(BUTTON3_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(BUTTON1_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(BUTTON2_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(BUTTON3_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     # Initialise Blynk
     blynk_setup = BlynkSetup(auth_token=BLYNK_AUTH)
@@ -56,7 +56,7 @@ def main():
         while True:
             blynk_setup.run()
             x, y, z = accelerometer.acceleration
-            # print(f"Acceleration: X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
+            print(f"Acceleration: X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
 
             # print("Pin: 17 = ", GPIO.input(BUTTON1_PIN))
             # print("Pin: 27 = ", GPIO.input(BUTTON2_PIN))
@@ -78,10 +78,10 @@ def main():
                 print("Pin: 22 = ", GPIO.input(BUTTON3_PIN))
                 buzzer.pulse()
                 haptic.pulse()
-                if GPIO.input(BUTTON1_PIN) == 0:  # Actually Fallen
+                if GPIO.input(BUTTON1_PIN) == GPIO.HIGH:  # Actually Fallen
                     fall_detected = False
                     blynk_setup.virtual_write(8, "The University of Wollongong, Northfields Ave, Wollongong NSW 2500")
-                elif GPIO.input(BUTTON2_PIN) == 0:  # False Alert
+                elif GPIO.input(BUTTON2_PIN) == GPIO.HIGH:  # False Alert
                     fall_detected = False
                     blynk_setup.virtual_write(6, 0)  # Turn fall detected indicator off
                 else:  # No response - fall detected (wait 30s)

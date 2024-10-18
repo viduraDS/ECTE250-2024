@@ -11,13 +11,7 @@ from hapticBuzzer import Haptic, Buzzer
 
 BLYNK_AUTH = 'XMU3TqkPXkZuubyYdndoIP1qgHhY4u1i'
 
-def calculate_velocity(x, y, z, delta_time):
-    """Calculate velocity from acceleration."""
-    velocity = []
-    velocity[0] += x * delta_time  # X-axis velocity
-    velocity[1] += y * delta_time  # Y-axis velocity
-    velocity[2] += z * delta_time  # Z-axis velocity
-    return velocity
+
     
 def main():
     # Initialise GPIO
@@ -62,15 +56,9 @@ def main():
     try:
         while True:
             blynk_setup.run()
-
-            current_time = time.time()
-            last_time = 0
-            delta_time = current_time - last_time
-            last_time = current_time
             x, y, z = accelerometer.acceleration
-            velocity = calculate_velocity(x, y, z, delta_time)
             print(f"Acceleration: X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
-            print(f"Velocity: {velocity}")
+
 
             if accelerometer.events['freefall']:
                 start_time = time.time()

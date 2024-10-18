@@ -28,6 +28,7 @@ def main():
     # Initialise Accelerometer
     i2c = busio.I2C(board.SCL, board.SDA)
     accelerometer = adafruit_adxl34x.ADXL345(i2c)
+    accelerometer.enable_freefall_detection()
 
     # Initialise Actuators
     haptic = Haptic(pin=13)  # GPIO13 for haptic feedback

@@ -64,6 +64,7 @@ def main():
             blynk_setup.run()
 
             current_time = time.time()
+            last_time = 0
             delta_time = current_time - last_time
             last_time = current_time
             x, y, z = accelerometer.acceleration

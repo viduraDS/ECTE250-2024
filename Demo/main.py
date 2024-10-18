@@ -78,10 +78,10 @@ def main():
                 print("Pin: 22 = ", GPIO.input(BUTTON3_PIN))
                 buzzer.pulse()
                 haptic.pulse()
-                if GPIO.input(BUTTON1_PIN) == GPIO.HIGH:  # Actually Fallen
+                if GPIO.input(BUTTON1_PIN) == GPIO.LOW:  # Actually Fallen
                     fall_detected = False
                     blynk_setup.virtual_write(8, "The University of Wollongong, Northfields Ave, Wollongong NSW 2500")
-                elif GPIO.input(BUTTON2_PIN) == GPIO.HIGH:  # False Alert
+                elif GPIO.input(BUTTON2_PIN) == GPIO.LOW:  # False Alert
                     fall_detected = False
                     blynk_setup.virtual_write(6, 0)  # Turn fall detected indicator off
                 else:  # No response - fall detected (wait 30s)
